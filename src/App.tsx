@@ -1,4 +1,5 @@
 import { AppBar, Container, CssBaseline, Toolbar, Typography } from "@mui/material"
+import CarList from "./pages/CarList"
 
 
 
@@ -14,6 +15,7 @@ function App() {
           </Typography>
         </Toolbar>
       </AppBar>
+      <CarList />
     </Container>
   </>
   )
