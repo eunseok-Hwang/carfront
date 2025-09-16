@@ -3,13 +3,15 @@ import { deleteCar, getCars } from "../api/carApi";
 import { DataGrid, GridDeleteIcon } from "@mui/x-data-grid";
 import type { GridCellParams, GridColDef } from "@mui/x-data-grid";
 import type { Car } from "../type";
-import { IconButton, Snackbar, Tooltip } from "@mui/material";
+import { Button, IconButton, Snackbar, Tooltip } from "@mui/material";
 import AddCar from "../components/AddCar";
 import EditCar from "../components/EditCar";
+import { useAuthStore } from "../store";
 
 
 
 export default function CarList() {
+    const {logout} = useAuthStore();
     const [data, setData] = useState<Car[]>([]);
     const [toastVal, setToastVal] = useState({
         open: false, msg: ''
@@ -25,6 +27,7 @@ export default function CarList() {
         if(confirm(`${id}번 데이터를 삭제하시겠습니까?`)) {        
         deleteCar(id)
         .then((res) => {
+            loadCarData();
             setToastVal({open:true, msg: `${res}번 데이터가 삭제되었습니다.`});
         })
         .catch(err => console.log(err))
@@ -46,7 +49,9 @@ export default function CarList() {
             filterable: false,
             disableColumnMenu: true,
             renderCell: (params: GridCellParams) => (
-                <EditCar carData={params.row}/>
+                <EditCar 
+                    carData={params.row}
+                    loadCarData={loadCarData}/>
             )
         },
         {
@@ -66,13 +71,19 @@ export default function CarList() {
         }
     ]
 
+    const handleLogout = () => {
+        sessionStorage.setItem("jwt", "");
+        logout();
+    }
+
     useEffect(() => {
         loadCarData();        
     },[]);
 
     return(
         <>
-            <AddCar />
+            <AddCar loadCarData={loadCarData}/>
+            <Button onClick={handleLogout}>로그아웃</Button>
             <DataGrid 
                 rows={data}
                 columns={columns}
@@ -85,7 +96,7 @@ export default function CarList() {
                 open={toastVal.open}
                 onClick={() => setToastVal({open: false, msg: ''})}
                 message={toastVal.msg}
-                autoHideDuration={2000}
+                autoHideDuration={3000}
             />
         </>
     )

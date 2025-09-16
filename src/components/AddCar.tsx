@@ -4,7 +4,11 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/
 import { addCar } from "../api/carApi";
 import CarDialogContent from "./CarDialogContent";
 
-export default function AddCar() {
+type AddCarProps ={
+    loadCarData: () => void;
+}
+
+export default function AddCar({loadCarData} : AddCarProps) {
     const [open, setOpen] = useState(false);
     const [car, setCar] = useState<Car>({
         brand: '',
@@ -24,8 +28,10 @@ export default function AddCar() {
         setCar({ ...car, [name]: value});
     }
 
-    const handleSave = () => {
-        addCar(car);
+    const handleSave = async () => {
+        await addCar(car);
+        // car list reload 
+        loadCarData();
         setCar({
             brand: '',
             model: '',
